@@ -6,10 +6,10 @@ const int SCREEN_WIDTH = 307;
 const int SCREEN_HEIGHT = 295;
 
 //The window we'll be rendering to
-SDL_Window* gWindow = nullptr;
+SDL_Window* sdl_window = nullptr;
     
 //The surface contained by the window
-SDL_Surface* gScreenSurface = nullptr;
+SDL_Surface* sdl_screen_surface = nullptr;
 
 //The image we will load and show on the screen
 SDL_Surface* gHelloWorld = nullptr;
@@ -27,9 +27,9 @@ bool init()
     else
     {
         // Create window
-        gWindow = SDL_CreateWindow("The Witch of Miracles", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+        sdl_window = SDL_CreateWindow("The Witch of Miracles", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
         
-        if (gWindow == nullptr)
+        if (sdl_window == nullptr)
         {
             std::cout << "Window could not be created! SDL_Error: " << SDL_GetError() << '\n';
             return false;
@@ -37,7 +37,7 @@ bool init()
         else
         {
             // Get Window Surface
-            gScreenSurface = SDL_GetWindowSurface(gWindow);
+            sdl_screen_surface = SDL_GetWindowSurface(sdl_window);
         }
     }
 
@@ -69,8 +69,8 @@ void close()
     gHelloWorld = nullptr;
 
     // Destroy window
-    SDL_DestroyWindow(gWindow);
-    gWindow = nullptr;
+    SDL_DestroyWindow(sdl_window);
+    sdl_window = nullptr;
 
     // Quit SDL Subsystems
     SDL_Quit();
@@ -95,10 +95,10 @@ int main(int argc, char* args[])
         else
         {
             // Apply image
-            SDL_BlitSurface(gHelloWorld, nullptr, gScreenSurface, nullptr);
+            SDL_BlitSurface(gHelloWorld, nullptr, sdl_screen_surface, nullptr);
 
             // Update surface
-            SDL_UpdateWindowSurface(gWindow);
+            SDL_UpdateWindowSurface(sdl_window);
         }
     }
 

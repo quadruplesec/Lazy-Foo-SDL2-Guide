@@ -1,10 +1,8 @@
-#include <iostream>
-#include <string>
 #include <SDL2/SDL.h>
+#include <cstdio>
+#include <string>
 
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
-
+const int SCREEN_WIDTH = 800, SCREEN_HEIGHT = 600;
 
 SDL_Window* sdl_window = nullptr;
 SDL_Surface* sdl_screen_surface = nullptr;
@@ -29,16 +27,16 @@ bool init()
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
-        std::cout << "SDL could not initialise! SDL_Error: " << SDL_GetError() << '\n';
+        printf("SDL could not initialise! SDL_Error: %s\n", SDL_GetError());
         return false;
     }
     else
     {
-        sdl_window = SDL_CreateWindow("Kihihihihi", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+        sdl_window = SDL_CreateWindow("Kero Kero", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 
         if (sdl_window == nullptr)
         {
-            std::cout << "Window could not be created! SDL_Error: " << SDL_GetError() << '\n';
+            printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
             return false;
         }
         else
@@ -53,14 +51,30 @@ bool init()
 
 SDL_Surface* load_surface(std::string filename)
 {
+    // The final optimised surface
+    SDL_Surface* optimised_surface = nullptr;
+
     SDL_Surface* loaded_surface = SDL_LoadBMP(filename.c_str());
 
     if (loaded_surface == nullptr)
     {
-        std::cout << "Image could not be created! SDL_Error: " << SDL_GetError() << '\n';
+        printf("Image could not be created! SDL_Error: %s\n", SDL_GetError());
+        return nullptr;
     }
 
-    return loaded_surface;
+    // Convert surface to screen format
+    optimised_surface = SDL_ConvertSurface(loaded_surface, sdl_screen_surface->format, 0);
+    
+    if (optimised_surface == nullptr)
+    {
+        printf("Unable to optimise image %s! SDL_Error: %s\n", filename.c_str(), SDL_GetError());
+    }
+
+    // Get rid of old loaded surface
+    SDL_FreeSurface(loaded_surface);
+    loaded_surface = nullptr;
+    
+    return optimised_surface;
 }
 
 
@@ -70,7 +84,7 @@ bool load_media()
     
     if (gkey_press_surfaces[KEY_PRESS_SURFACE_DEFAULT] == nullptr)
     {
-        std::cout << "Failed to load default image!\n";
+        printf("Failed to load default image!\n");
         return false;
     }
 
@@ -78,7 +92,7 @@ bool load_media()
 
     if (gkey_press_surfaces[KEY_PRESS_SURFACE_UP] == nullptr)
     {
-        std::cout << "Failed to load default image!\n";
+        printf("Failed to load UP image!\n");
         return false;
     }
 
@@ -86,7 +100,7 @@ bool load_media()
 
     if (gkey_press_surfaces[KEY_PRESS_SURFACE_DOWN] == nullptr)
     {
-        std::cout << "Failed to load DOWN image!\n";
+        printf("Failed to load DOWN image!\n");
         return false;
     }
 
@@ -94,7 +108,7 @@ bool load_media()
 
     if (gkey_press_surfaces[KEY_PRESS_SURFACE_LEFT] == nullptr)
     {
-        std::cout << "Failed to load LEFT image!\n";
+        printf("Failed to load LEFT image!\n");
         return false;
     }
 
@@ -102,7 +116,7 @@ bool load_media()
 
     if (gkey_press_surfaces[KEY_PRESS_SURFACE_RIGHT] == nullptr)
     {
-        std::cout << "Failed to load RIGHT image!\n";
+        printf("Failed to load RIGHT image!\n");
         return false;
     }
 
@@ -126,19 +140,14 @@ int main(int argc, char* argv[])
 {
     if (!init())
     {
-        std::cout << "Failed to initisalise!\n";
+        printf("Failed to initialise!\n");
         return 1;
     }
 
     if (!load_media())
     {
-        std::cout << "Failed to load media!\n";
-        return 1;
+        printf("Failed to load media!\n");
     }
-
-    sdl_stretched_surface = gkey_press_surfaces[KEY_PRESS_SURFACE_DEFAULT];
-    SDL_BlitSurface(sdl_stretched_surface, nullptr, sdl_screen_surface, nullptr);
-    SDL_UpdateWindowSurface(sdl_window);
 
     bool quit = false;
     SDL_Event e;
@@ -178,8 +187,18 @@ int main(int argc, char* argv[])
                         sdl_stretched_surface = gkey_press_surfaces[KEY_PRESS_SURFACE_DEFAULT];
                         break;
                 }
+                
+                // Apply image stretching
+                SDL_Rect stretched_rect;
+                stretched_rect.x = 0;
+                stretched_rect.y = 0;
+                stretched_rect.w = SCREEN_WIDTH;
+                stretched_rect.h = SCREEN_HEIGHT;
+                SDL_BlitScaled(sdl_stretched_surface, nullptr, sdl_screen_surface, &stretched_rect);
 
-                SDL_BlitSurface(sdl_stretched_surface, nullptr, sdl_screen_surface, nullptr);
+                SDL_UpdateWindowSurface(sdl_window);
+
+                
                 SDL_UpdateWindowSurface(sdl_window);
             }
         }
@@ -188,3 +207,4 @@ int main(int argc, char* argv[])
     close();
     return 0;
 }
+
