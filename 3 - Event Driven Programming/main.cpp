@@ -102,7 +102,10 @@ int main(int argc, char* args[])
         }
     }
 
+    // Main loop flag
     bool quit = false;
+
+    // Event handler
     SDL_Event e;
 
     // While application is running
