@@ -13,15 +13,10 @@ CXXFLAGS+= -Wall -Wuninitialized -Werror
 CXXFLAGS+= -g
 
 # Link with math library and SDL
-CXXFLAGS+= -lm -lSDL2
+CXXFLAGS+= -lSDL2main -lSDL2 -lSDL2_image
 
 # Enable ASan (Address Sanitizer) 
 # and UBSan (Undefined Behavior Sanitizer)
-#
-# NOTE: comment these temporarily if 
-# your development environment is failing
-# due to these settings - it is important that 
-# you fix your environment at some point.
 CXXFLAGS+=-fsanitize=address -fsanitize=undefined
 
 

@@ -1,5 +1,3 @@
-// I'm getting lots of mem leaks when running this on WSL
-
 #include <SDL2/SDL.h>
 #include <iostream>
 
